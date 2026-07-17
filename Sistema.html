@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gerenciamento de Tarefas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, .08);
+        }
+
+        .card-header {
+            border-radius: 15px 15px 0 0 !important;
+            font-weight: 600;
+        }
+
+        .card-header.afazer {
+            background-color: #D8EAFE;
+            color: #3A6EA5;
+        }
+        .card-header.progresso {
+            background-color: #FFF4CC;
+            color: #9A7A00;
+        }
+
+        .card-header.concluido {
+            background-color: #DDF5E5;
+            color: #2F7D52;
+        }
+
+        .navbar {
+            background-color: #F8FBFF !important;
+            padding: 15px 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, .08);
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #3A6EA5 !important;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-nova {
+            background-color: #5A9BF6;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 22px;
+            font-weight: 600;
+            transition: .2s;
+        }
+
+        .btn-nova:hover {
+            background-color: #4288ea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(66, 136, 234, .3);
+        }
+
+        .btn {
+            border-radius: 30px;
+            font-weight: 600;
+            padding: 8px 18px;
+            transition: all .2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .editar,
+        .excluir {
+            padding: 5px 12px;
+            font-size: .85rem;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #F8FBFF 0%, #EEF6FF 50%, #F9FBFD 100%);
+        }
+
+        .afazer h5::before {
+            content: "";
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #6EA8FE;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .progresso h5::before {
+            content: "";
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #FFD666;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .concluido h5::before {
+            content: "";
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #95DE64;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+      .postit{
+    background:#FFF9C4;
+    transform:rotate(-2deg);
+    box-shadow:8px 8px 18px rgba(0,0,0,.15);
+}
+
+.postit .card-header{
+    background:#FFE66D;
+    color:#555;
+    font-weight:bold;
+}
+
+.postit textarea{
+    background:transparent;
+    border:none;
+    resize:none;
+    height:100%;
+}
+
+.postit textarea:focus{
+    outline:none;
+    box-shadow:none;
+}
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-sm">
+        <div class="container-fluid">
+
+            <a class="navbar-brand">
+                <i class="bi bi-kanban-fill"></i>
+                Sistema de Gerenciamento de Tarefas
+            </a>
+
+            <button class="btn btn-nova" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleForm">
+
+                <i class="bi bi-plus-circle-fill"></i>
+                Nova Tarefa
+            </button>
+
+        </div>
+    </nav>
+    <div class="container my-4">
+        <div class="collapse" id="collapsibleForm">
+            <div class="card card-body mb-4">
+                <form id="formTarefa" class="row g-3">
+                    <div class="col-12">
+                        <label for="tituloTarefa" class="form-label">Título da tarefa</label>
+                        <input type="text" class="form-control" id="tituloTarefa" placeholder="Digite o título"
+                            required>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-success">Adicionar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="collapse"
+                            data-bs-target="#collapsibleForm">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header afazer">
+                        <h5 class="mb-0">A fazer</h5>
+                    </div>
+
+                    <div class="card-body" id="colAfazer">
+                        <p class="text-muted mb-0">Nenhuma tarefa ainda.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header progresso">
+                        <h5 class="mb-0">Em progresso</h5>
+                    </div>
+
+                    <div class="card-body" id="colEmProgresso">
+                        <p class="text-muted mb-0">Nenhuma tarefa ainda.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header concluido">
+                        <h5 class="mb-0">Concluído</h5>
+                    </div>
+
+                    <div class="card-body" id="colConcluido">
+                        <p class="text-muted mb-0">Nenhuma tarefa ainda.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="card mt-4 anotacoes">
+
+                <div class="card-header">
+                    📌 Minhas Anotações
+                </div>
+
+                <div class="card-body">
+
+                    <textarea id="anotacoes" class="form-control" rows="6"
+                        placeholder="Escreva lembretes, ideias ou observações..."></textarea>
+
+                    <div class="text-end mt-3">
+                        <button class="btn btn-primary" id="salvarAnotacoes">
+                            Salvar
+                        </button>
+                    </div>
+
+                </div>
+
+            </div>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+                crossorigin="anonymous"></script>
+
+            <script>
+                (function () {
+
+                    const form = document.getElementById("formTarefa");
+                    const tituloInput = document.getElementById("tituloTarefa");
+
+                    const colAfazer = document.getElementById("colAfazer");
+                    const colEmProgresso = document.getElementById("colEmProgresso");
+                    const colConcluido = document.getElementById("colConcluido");
+
+                    const collapse = new bootstrap.Collapse(
+                        document.getElementById("collapsibleForm"),
+                        { toggle: false }
+                    );
+
+                    form.addEventListener("submit", function (e) {
+                        e.preventDefault();
+
+                        const titulo = tituloInput.value.trim();
+
+                        if (titulo == "") return;
+
+                        criarTarefa(titulo, colAfazer);
+
+                        form.reset();
+                        collapse.hide();
+
+                    });
+
+                    function criarTarefa(titulo, coluna) {
+
+                        removerMensagem(coluna);
+
+                        const card = document.createElement("div");
+                        card.className = "card mb-2";
+
+                        card.innerHTML = `
+            <div class="card-body">
+
+                <h6 class="titulo mb-3">${titulo}</h6>
+
+                <div class="d-flex gap-2">
+
+                    <button class="btn btn-warning btn-sm editar">
+                        Editar
+                    </button>
+
+                    <button class="btn btn-danger btn-sm excluir">
+                        Excluir
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+
+                        coluna.appendChild(card);
+
+                        card.querySelector(".editar").addEventListener("click", function () {
+
+                            let novoTitulo = prompt(
+                                "Novo título:",
+                                card.querySelector(".titulo").textContent
+                            );
+
+                            if (novoTitulo && novoTitulo.trim() != "") {
+                                card.querySelector(".titulo").textContent = novoTitulo;
+                            }
+
+                            let status = prompt(
+                                `Escolha a coluna:
+
+1 - A fazer
+2 - Em progresso
+3 - Concluído`
+                            );
+
+                            if (status == "1") {
+                                removerMensagem(colAfazer);
+                                colAfazer.appendChild(card);
+                            }
+
+                            else if (status == "2") {
+                                removerMensagem(colEmProgresso);
+                                colEmProgresso.appendChild(card);
+                            }
+
+                            else if (status == "3") {
+                                removerMensagem(colConcluido);
+                                colConcluido.appendChild(card);
+                            }
+
+                            verificarColunas();
+
+                        });
+
+                        card.querySelector(".excluir").addEventListener("click", function () {
+
+                            card.remove();
+
+                            verificarColunas();
+
+                        });
+
+                    }
+
+                    function removerMensagem(coluna) {
+
+                        const msg = coluna.querySelector(".text-muted");
+
+                        if (msg) {
+                            msg.remove();
+                        }
+
+                    }
+
+                    function verificarColunas() {
+
+                        verificar(colAfazer);
+                        verificar(colEmProgresso);
+                        verificar(colConcluido);
+
+                    }
+
+                    function verificar(coluna) {
+
+                        if (coluna.children.length == 0) {
+
+                            coluna.innerHTML =
+                                '<p class="text-muted mb-0">Nenhuma tarefa ainda.</p>';
+
+                        }
+
+                    }
+
+                })();
+                const textarea = document.getElementById("anotacoes");
+
+textarea.value = localStorage.getItem("anotacoes") || "";
+
+document.getElementById("salvarAnotacoes").addEventListener("click", function () {
+
+    localStorage.setItem("anotacoes", textarea.value);
+
+    alert("Anotações salvas!");
+
+});
+            </script>
+
+</body>
+
+</html>
